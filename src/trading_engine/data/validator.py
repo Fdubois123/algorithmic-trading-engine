@@ -9,8 +9,8 @@ class MarketDataValidator:
     """Validate OHLCV market data used by the trading engine."""
 
     REQUIRED_COLUMNS: ClassVar[frozenset[str]] = frozenset(
-    {"open", "high", "low", "close", "volume"}
-)
+        {"open", "high", "low", "close", "volume"}
+    )
 
     @classmethod
     def validate(cls, data: pd.DataFrame) -> None:

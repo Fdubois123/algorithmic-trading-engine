@@ -31,8 +31,7 @@ def test_columns_are_normalized(tmp_path):
     file_path = tmp_path / "market_data.csv"
 
     file_path.write_text(
-        "Timestamp,Open,HIGH,Low,Close,Volume\n"
-        "2026-01-01,100,105,98,103,1000\n",
+        "Timestamp,Open,HIGH,Low,Close,Volume\n2026-01-01,100,105,98,103,1000\n",
         encoding="utf-8",
     )
 
@@ -74,8 +73,7 @@ def test_missing_timestamp_raises_error(tmp_path):
     file_path = tmp_path / "market_data.csv"
 
     file_path.write_text(
-        "open,high,low,close,volume\n"
-        "100,105,98,103,1000\n",
+        "open,high,low,close,volume\n100,105,98,103,1000\n",
         encoding="utf-8",
     )
 
@@ -101,8 +99,7 @@ def test_invalid_timestamp_raises_error(tmp_path):
     file_path = tmp_path / "market_data.csv"
 
     file_path.write_text(
-        "timestamp,open,high,low,close,volume\n"
-        "not-a-date,100,105,98,103,1000\n",
+        "timestamp,open,high,low,close,volume\nnot-a-date,100,105,98,103,1000\n",
         encoding="utf-8",
     )
 
