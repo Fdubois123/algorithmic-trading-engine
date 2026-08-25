@@ -16,15 +16,41 @@ from trading_engine.indicators import (
     simple_returns,
     wealth_index,
 )
+from trading_engine.performance import (
+    annualized_return,
+    cagr,
+    calmar_ratio,
+    drawdown_duration,
+    drawdown_series,
+    information_ratio,
+    max_drawdown,
+    sharpe_ratio,
+    sortino_ratio,
+    tracking_error,
+    underwater_curve,
+)
+from trading_engine.risk import (
+    historical_cvar,
+    historical_var,
+)
 
 __all__ = [
+    "annualized_return",
     "annualized_volatility",
+    "cagr",
+    "calmar_ratio",
     "close_to_close_volatility",
     "cumulative_returns",
     "downside_volatility",
+    "drawdown_duration",
+    "drawdown_series",
     "ewma_volatility",
+    "historical_cvar",
+    "historical_var",
     "historical_volatility",
+    "information_ratio",
     "log_returns",
+    "max_drawdown",
     "parkinson_volatility",
     "rolling_beta",
     "rolling_correlation",
@@ -32,6 +58,10 @@ __all__ = [
     "rolling_mean",
     "rolling_std",
     "rolling_zscore",
+    "sharpe_ratio",
     "simple_returns",
+    "sortino_ratio",
+    "tracking_error",
+    "underwater_curve",
     "wealth_index",
 ]
