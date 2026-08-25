@@ -312,3 +312,102 @@ def test_close_to_close_rejects_non_positive_prices():
             prices,
             window=3,
         )
+
+
+def test_historical_volatility_rejects_invalid_window(returns):
+    with pytest.raises(ValueError, match="greater than zero"):
+        historical_volatility(
+            returns,
+            window=0,
+        )
+
+
+def test_annualized_volatility_rejects_non_integer_periods(returns):
+    with pytest.raises(TypeError, match="integer"):
+        annualized_volatility(
+            returns,
+            window=3,
+            periods_per_year=252.5,
+        )
+
+
+def test_downside_volatility_rejects_non_finite_target(returns):
+    with pytest.raises(ValueError, match="finite"):
+        downside_volatility(
+            returns,
+            window=3,
+            target_return=np.inf,
+        )
+
+
+def test_downside_volatility_rejects_min_periods_above_window(returns):
+    with pytest.raises(ValueError, match="cannot exceed window"):
+        downside_volatility(
+            returns,
+            window=3,
+            min_periods=4,
+        )
+
+
+def test_downside_volatility_rejects_invalid_annualization(returns):
+    with pytest.raises(ValueError, match="greater than zero"):
+        downside_volatility(
+            returns,
+            window=3,
+            periods_per_year=0,
+        )
+
+
+def test_ewma_volatility_rejects_invalid_min_periods(returns):
+    with pytest.raises(ValueError, match="greater than zero"):
+        ewma_volatility(
+            returns,
+            span=3,
+            min_periods=0,
+        )
+
+
+def test_ewma_volatility_rejects_invalid_annualization(returns):
+    with pytest.raises(ValueError, match="greater than zero"):
+        ewma_volatility(
+            returns,
+            span=3,
+            periods_per_year=0,
+        )
+
+
+def test_parkinson_rejects_min_periods_above_window():
+    high = pd.Series([110.0, 111.0, 112.0])
+    low = pd.Series([100.0, 101.0, 102.0])
+
+    with pytest.raises(ValueError, match="cannot exceed window"):
+        parkinson_volatility(
+            high,
+            low,
+            window=3,
+            min_periods=4,
+        )
+
+
+def test_parkinson_rejects_invalid_annualization():
+    high = pd.Series([110.0, 111.0, 112.0])
+    low = pd.Series([100.0, 101.0, 102.0])
+
+    with pytest.raises(ValueError, match="greater than zero"):
+        parkinson_volatility(
+            high,
+            low,
+            window=3,
+            periods_per_year=0,
+        )
+
+
+def test_close_to_close_rejects_invalid_annualization():
+    prices = pd.Series([100.0, 101.0, 102.0, 103.0])
+
+    with pytest.raises(ValueError, match="greater than zero"):
+        close_to_close_volatility(
+            prices,
+            window=3,
+            periods_per_year=0,
+        )

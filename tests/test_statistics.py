@@ -585,3 +585,98 @@ def test_beta_respects_ddof_zero():
     )
 
     assert result.iloc[-1] == pytest.approx(2.0)
+
+
+def test_covariance_rejects_min_periods_greater_than_window():
+    left = pd.Series([1.0, 2.0, 3.0])
+    right = pd.Series([2.0, 4.0, 6.0])
+
+    with pytest.raises(ValueError, match="cannot exceed window"):
+        rolling_covariance(
+            left,
+            right,
+            window=3,
+            min_periods=4,
+        )
+
+
+@pytest.mark.parametrize("ddof", [-1, -5])
+def test_covariance_rejects_negative_ddof(ddof):
+    left = pd.Series([1.0, 2.0, 3.0])
+    right = pd.Series([2.0, 4.0, 6.0])
+
+    with pytest.raises(ValueError, match="cannot be negative"):
+        rolling_covariance(
+            left,
+            right,
+            window=3,
+            ddof=ddof,
+        )
+
+
+@pytest.mark.parametrize("ddof", [1.5, "1", True])
+def test_covariance_rejects_non_integer_ddof(ddof):
+    left = pd.Series([1.0, 2.0, 3.0])
+    right = pd.Series([2.0, 4.0, 6.0])
+
+    with pytest.raises(TypeError, match="integer"):
+        rolling_covariance(
+            left,
+            right,
+            window=3,
+            ddof=ddof,
+        )
+
+
+def test_beta_rejects_min_periods_greater_than_window():
+    asset = pd.Series([0.01, 0.02, 0.03])
+    benchmark = pd.Series([0.02, 0.01, 0.04])
+
+    with pytest.raises(ValueError, match="cannot exceed window"):
+        rolling_beta(
+            asset,
+            benchmark,
+            window=3,
+            min_periods=4,
+        )
+
+
+@pytest.mark.parametrize("ddof", [-1, -5])
+def test_beta_rejects_negative_ddof(ddof):
+    asset = pd.Series([0.01, 0.02, 0.03])
+    benchmark = pd.Series([0.02, 0.01, 0.04])
+
+    with pytest.raises(ValueError, match="cannot be negative"):
+        rolling_beta(
+            asset,
+            benchmark,
+            window=3,
+            ddof=ddof,
+        )
+
+
+@pytest.mark.parametrize("ddof", [1.5, "1", True])
+def test_beta_rejects_non_integer_ddof(ddof):
+    asset = pd.Series([0.01, 0.02, 0.03])
+    benchmark = pd.Series([0.02, 0.01, 0.04])
+
+    with pytest.raises(TypeError, match="integer"):
+        rolling_beta(
+            asset,
+            benchmark,
+            window=3,
+            ddof=ddof,
+        )
+
+
+def test_correlation_rejects_min_periods_greater_than_window():
+    left = pd.Series([1.0, 2.0, 3.0])
+    right = pd.Series([3.0, 4.0, 5.0])
+
+    with pytest.raises(ValueError, match="cannot exceed window"):
+        rolling_correlation(
+            left,
+            right,
+            window=3,
+            min_periods=4,
+        )
