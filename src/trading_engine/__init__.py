@@ -1,3 +1,20 @@
+from trading_engine.backtest import (
+    BacktestEngine,
+    BacktestResult,
+    ExecutionModel,
+    Fill,
+    FillEvent,
+    MarketEvent,
+    Order,
+    OrderEvent,
+    OrderSide,
+    OrderStatus,
+    OrderType,
+    Portfolio,
+    Position,
+    SignalEvent,
+    Strategy,
+)
 from trading_engine.indicators import (
     annualized_volatility,
     close_to_close_volatility,
@@ -35,6 +52,21 @@ from trading_engine.risk import (
 )
 
 __all__ = [
+    "BacktestEngine",
+    "BacktestResult",
+    "ExecutionModel",
+    "Fill",
+    "FillEvent",
+    "MarketEvent",
+    "Order",
+    "OrderEvent",
+    "OrderSide",
+    "OrderStatus",
+    "OrderType",
+    "Portfolio",
+    "Position",
+    "SignalEvent",
+    "Strategy",
     "annualized_return",
     "annualized_volatility",
     "cagr",

@@ -1,5 +1,5 @@
 import trading_engine
-from trading_engine import indicators, performance, risk
+from trading_engine import backtest, indicators, performance, risk
 
 EXPECTED_INDICATORS = {
     "annualized_volatility",
@@ -38,6 +38,23 @@ EXPECTED_RISK = {
     "historical_cvar",
     "historical_var",
 }
+EXPECTED_BACKTEST = {
+    "BacktestEngine",
+    "BacktestResult",
+    "ExecutionModel",
+    "Fill",
+    "FillEvent",
+    "MarketEvent",
+    "Order",
+    "OrderEvent",
+    "OrderSide",
+    "OrderStatus",
+    "OrderType",
+    "Portfolio",
+    "Position",
+    "SignalEvent",
+    "Strategy",
+}
 
 
 def test_indicator_public_api_exports_expected_symbols():
@@ -68,7 +85,9 @@ def test_risk_public_api_symbols_are_importable():
 
 
 def test_top_level_public_api_contains_all_public_symbols():
-    expected = EXPECTED_INDICATORS | EXPECTED_PERFORMANCE | EXPECTED_RISK
+    expected = (
+        EXPECTED_INDICATORS | EXPECTED_PERFORMANCE | EXPECTED_RISK | EXPECTED_BACKTEST
+    )
 
     assert set(trading_engine.__all__) == expected
 
@@ -76,3 +95,12 @@ def test_top_level_public_api_contains_all_public_symbols():
 def test_top_level_public_api_symbols_are_importable():
     for name in trading_engine.__all__:
         assert hasattr(trading_engine, name)
+
+
+def test_backtest_public_api_exports_expected_symbols():
+    assert set(backtest.__all__) == EXPECTED_BACKTEST
+
+
+def test_backtest_public_api_symbols_are_importable():
+    for name in backtest.__all__:
+        assert hasattr(backtest, name)
