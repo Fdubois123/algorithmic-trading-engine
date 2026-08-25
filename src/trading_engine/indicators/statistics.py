@@ -98,3 +98,48 @@ def rolling_std(
     result.name = "rolling_std"
 
     return result
+
+
+def rolling_zscore(
+    series: pd.Series,
+    window: int,
+    *,
+    min_periods: int | None = None,
+    ddof: int = 1,
+) -> pd.Series:
+    """Calculate a rolling z-score.
+
+    Z_t = (X_t - rolling_mean_t) / rolling_std_t
+
+    Args:
+        series: Numeric time series.
+        window: Rolling window size.
+        min_periods: Minimum observations required to produce a value.
+            Defaults to ``window``.
+        ddof: Delta degrees of freedom used by the rolling standard deviation.
+
+    Returns:
+        Rolling z-score with the original index preserved.
+
+    Notes:
+        If rolling standard deviation is zero, the z-score is undefined
+        and NaN is returned for that observation.
+    """
+    mean = rolling_mean(
+        series,
+        window,
+        min_periods=min_periods,
+    )
+
+    std = rolling_std(
+        series,
+        window,
+        min_periods=min_periods,
+        ddof=ddof,
+    )
+
+    result = (series - mean) / std
+    result = result.mask(std == 0)
+    result.name = "rolling_zscore"
+
+    return result
