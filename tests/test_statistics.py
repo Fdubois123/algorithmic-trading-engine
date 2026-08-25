@@ -3,6 +3,7 @@ import pandas as pd
 import pytest
 
 from trading_engine.indicators.statistics import (
+    rolling_beta,
     rolling_correlation,
     rolling_covariance,
     rolling_mean,
@@ -454,3 +455,133 @@ def test_correlation_respects_min_periods():
 
     assert pd.isna(result.iloc[0])
     assert result.iloc[1] == pytest.approx(1.0)
+
+
+def test_rolling_beta_is_correct():
+    asset = pd.Series([2.0, 4.0, 6.0])
+    benchmark = pd.Series([1.0, 2.0, 3.0])
+
+    result = rolling_beta(
+        asset,
+        benchmark,
+        window=3,
+    )
+
+    assert result.iloc[-1] == pytest.approx(2.0)
+
+
+def test_rolling_beta_of_identical_series_is_one():
+    returns = pd.Series([0.01, 0.02, -0.01, 0.03])
+
+    result = rolling_beta(
+        returns,
+        returns,
+        window=3,
+    )
+
+    assert result.iloc[-1] == pytest.approx(1.0)
+
+
+def test_negative_beta_is_correct():
+    asset = pd.Series([-1.0, -2.0, -3.0])
+    benchmark = pd.Series([1.0, 2.0, 3.0])
+
+    result = rolling_beta(
+        asset,
+        benchmark,
+        window=3,
+    )
+
+    assert result.iloc[-1] == pytest.approx(-1.0)
+
+
+def test_zero_benchmark_variance_returns_nan():
+    asset = pd.Series([1.0, 2.0, 3.0])
+    benchmark = pd.Series([5.0, 5.0, 5.0])
+
+    result = rolling_beta(
+        asset,
+        benchmark,
+        window=3,
+    )
+
+    assert pd.isna(result.iloc[-1])
+
+
+def test_rolling_beta_preserves_index():
+    index = pd.date_range("2026-01-01", periods=4)
+
+    asset = pd.Series([0.01, 0.02, 0.03, 0.04], index=index)
+    benchmark = pd.Series([0.02, 0.01, 0.04, 0.03], index=index)
+
+    result = rolling_beta(
+        asset,
+        benchmark,
+        window=3,
+    )
+
+    pd.testing.assert_index_equal(
+        result.index,
+        index,
+    )
+
+
+def test_rolling_beta_has_expected_name():
+    asset = pd.Series([1.0, 2.0, 4.0])
+    benchmark = pd.Series([2.0, 3.0, 5.0])
+
+    result = rolling_beta(
+        asset,
+        benchmark,
+        window=3,
+    )
+
+    assert result.name == "rolling_beta"
+
+
+def test_beta_rejects_mismatched_indices():
+    asset = pd.Series(
+        [1.0, 2.0, 3.0],
+        index=pd.date_range("2026-01-01", periods=3),
+    )
+
+    benchmark = pd.Series(
+        [1.0, 2.0, 3.0],
+        index=pd.date_range("2026-01-02", periods=3),
+    )
+
+    with pytest.raises(ValueError, match="indices must match"):
+        rolling_beta(
+            asset,
+            benchmark,
+            window=3,
+        )
+
+
+def test_beta_respects_min_periods():
+    asset = pd.Series([2.0, 4.0, 6.0])
+    benchmark = pd.Series([1.0, 2.0, 3.0])
+
+    result = rolling_beta(
+        asset,
+        benchmark,
+        window=3,
+        min_periods=2,
+    )
+
+    assert pd.isna(result.iloc[0])
+    assert result.iloc[1] == pytest.approx(2.0)
+
+
+def test_beta_respects_ddof_zero():
+    asset = pd.Series([2.0, 4.0, 6.0])
+    benchmark = pd.Series([1.0, 2.0, 3.0])
+
+    result = rolling_beta(
+        asset,
+        benchmark,
+        window=3,
+        ddof=0,
+    )
+
+    assert result.iloc[-1] == pytest.approx(2.0)

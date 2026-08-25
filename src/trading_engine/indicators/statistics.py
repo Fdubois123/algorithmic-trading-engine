@@ -244,3 +244,71 @@ def rolling_correlation(
     result.name = "rolling_correlation"
 
     return result
+
+
+def rolling_beta(
+    asset_returns: pd.Series,
+    benchmark_returns: pd.Series,
+    window: int,
+    *,
+    min_periods: int | None = None,
+    ddof: int = 1,
+) -> pd.Series:
+    """Calculate rolling beta of an asset relative to a benchmark.
+
+    Beta_t = Cov(asset, benchmark) / Var(benchmark)
+
+    Args:
+        asset_returns: Asset return series.
+        benchmark_returns: Benchmark return series.
+        window: Rolling window size.
+        min_periods: Minimum paired observations required to produce a value.
+            Defaults to ``window``.
+        ddof: Delta degrees of freedom used by covariance and variance.
+
+    Returns:
+        Rolling beta with the original index preserved.
+
+    Notes:
+        Beta is undefined when benchmark variance is zero. Those observations
+        are returned as NaN.
+    """
+    validate_pair(
+        asset_returns,
+        benchmark_returns,
+        allow_nan=True,
+    )
+    validate_window(window)
+
+    if min_periods is None:
+        min_periods = window
+    else:
+        validate_window(min_periods, name="min_periods")
+
+    if min_periods > window:
+        raise ValueError("min_periods cannot exceed window.")
+
+    if isinstance(ddof, bool) or not isinstance(ddof, int):
+        raise TypeError("ddof must be an integer.")
+
+    if ddof < 0:
+        raise ValueError("ddof cannot be negative.")
+
+    covariance = rolling_covariance(
+        asset_returns,
+        benchmark_returns,
+        window,
+        min_periods=min_periods,
+        ddof=ddof,
+    )
+
+    benchmark_variance = benchmark_returns.rolling(
+        window=window,
+        min_periods=min_periods,
+    ).var(ddof=ddof)
+
+    result = covariance / benchmark_variance
+    result = result.mask(benchmark_variance == 0)
+    result.name = "rolling_beta"
+
+    return result
