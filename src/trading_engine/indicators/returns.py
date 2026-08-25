@@ -3,26 +3,10 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
-
-def _validate_prices(prices: pd.Series) -> None:
-    """Validate a price series used by return calculations."""
-    if not isinstance(prices, pd.Series):
-        raise TypeError("Prices must be a pandas Series.")
-
-    if prices.empty:
-        raise ValueError("Prices cannot be empty.")
-
-    if not pd.api.types.is_numeric_dtype(prices):
-        raise TypeError("Prices must contain numeric values.")
-
-    if prices.isna().any():
-        raise ValueError("Prices cannot contain missing values.")
-
-    if not np.isfinite(prices.to_numpy(dtype=float)).all():
-        raise ValueError("Prices must contain only finite values.")
-
-    if (prices <= 0).any():
-        raise ValueError("Prices must be strictly positive.")
+from trading_engine.indicators._validation import (
+    validate_numeric_series,
+    validate_positive_series,
+)
 
 
 def simple_returns(prices: pd.Series) -> pd.Series:
@@ -30,7 +14,7 @@ def simple_returns(prices: pd.Series) -> pd.Series:
 
     R_t = P_t / P_{t-1} - 1
     """
-    _validate_prices(prices)
+    validate_positive_series(prices, name="Prices")
 
     result = prices.pct_change(fill_method=None)
     result.name = "simple_return"
@@ -43,7 +27,7 @@ def log_returns(prices: pd.Series) -> pd.Series:
 
     r_t = ln(P_t / P_{t-1})
     """
-    _validate_prices(prices)
+    validate_positive_series(prices, name="Prices")
 
     result = np.log(prices / prices.shift(1))
     result.name = "log_return"
@@ -56,17 +40,11 @@ def cumulative_returns(returns: pd.Series) -> pd.Series:
 
     C_t = product(1 + R_i) - 1
     """
-    if not isinstance(returns, pd.Series):
-        raise TypeError("Returns must be a pandas Series.")
-
-    if returns.empty:
-        raise ValueError("Returns cannot be empty.")
-
-    if not pd.api.types.is_numeric_dtype(returns):
-        raise TypeError("Returns must contain numeric values.")
-
-    if np.isinf(returns.to_numpy(dtype=float)).any():
-        raise ValueError("Returns cannot contain infinite values.")
+    validate_numeric_series(
+        returns,
+        name="Returns",
+        allow_nan=True,
+    )
 
     if (returns.dropna() < -1).any():
         raise ValueError("Arithmetic returns cannot be less than -100%.")
