@@ -4,6 +4,7 @@ import pytest
 
 from trading_engine.indicators._validation import (
     validate_numeric_series,
+    validate_pair,
     validate_positive_series,
     validate_window,
 )
@@ -82,3 +83,74 @@ def test_non_positive_windows_raise_error(window):
 def test_non_integer_windows_raise_error(window):
     with pytest.raises(TypeError, match="integer"):
         validate_window(window)
+
+
+def test_valid_pair_passes():
+    index = pd.date_range("2026-01-01", periods=3)
+
+    left = pd.Series([1.0, 2.0, 3.0], index=index)
+    right = pd.Series([4.0, 5.0, 6.0], index=index)
+
+    validate_pair(left, right)
+
+
+def test_pair_with_mismatched_indices_raises_error():
+    left = pd.Series(
+        [1.0, 2.0, 3.0],
+        index=pd.date_range("2026-01-01", periods=3),
+    )
+
+    right = pd.Series(
+        [4.0, 5.0, 6.0],
+        index=pd.date_range("2026-01-02", periods=3),
+    )
+
+    with pytest.raises(ValueError, match="indices must match"):
+        validate_pair(left, right)
+
+
+def test_pair_rejects_non_numeric_left_series():
+    index = pd.date_range("2026-01-01", periods=3)
+
+    left = pd.Series(["a", "b", "c"], index=index)
+    right = pd.Series([1.0, 2.0, 3.0], index=index)
+
+    with pytest.raises(TypeError, match="numeric"):
+        validate_pair(left, right)
+
+
+def test_pair_rejects_non_numeric_right_series():
+    index = pd.date_range("2026-01-01", periods=3)
+
+    left = pd.Series([1.0, 2.0, 3.0], index=index)
+    right = pd.Series(["a", "b", "c"], index=index)
+
+    with pytest.raises(TypeError, match="numeric"):
+        validate_pair(left, right)
+
+
+def test_pair_allows_nan_when_enabled():
+    index = pd.date_range("2026-01-01", periods=3)
+
+    left = pd.Series([1.0, np.nan, 3.0], index=index)
+    right = pd.Series([4.0, 5.0, np.nan], index=index)
+
+    validate_pair(
+        left,
+        right,
+        allow_nan=True,
+    )
+
+
+def test_pair_rejects_nan_when_disabled():
+    index = pd.date_range("2026-01-01", periods=3)
+
+    left = pd.Series([1.0, np.nan, 3.0], index=index)
+    right = pd.Series([4.0, 5.0, 6.0], index=index)
+
+    with pytest.raises(ValueError, match="missing"):
+        validate_pair(
+            left,
+            right,
+            allow_nan=False,
+        )

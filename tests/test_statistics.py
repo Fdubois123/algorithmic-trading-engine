@@ -3,6 +3,8 @@ import pandas as pd
 import pytest
 
 from trading_engine.indicators.statistics import (
+    rolling_correlation,
+    rolling_covariance,
     rolling_mean,
     rolling_std,
     rolling_zscore,
@@ -216,3 +218,239 @@ def test_zscore_respects_ddof_zero():
     expected = (3.0 - 2.0) / expected_std
 
     assert result.iloc[-1] == pytest.approx(expected)
+
+
+def test_rolling_covariance_is_correct():
+    left = pd.Series([1.0, 2.0, 3.0])
+    right = pd.Series([2.0, 4.0, 6.0])
+
+    result = rolling_covariance(
+        left,
+        right,
+        window=3,
+    )
+
+    expected = np.cov(
+        [1.0, 2.0, 3.0],
+        [2.0, 4.0, 6.0],
+        ddof=1,
+    )[0, 1]
+
+    assert result.iloc[-1] == pytest.approx(expected)
+
+
+def test_rolling_covariance_preserves_index():
+    index = pd.date_range("2026-01-01", periods=4)
+
+    left = pd.Series([1.0, 2.0, 3.0, 4.0], index=index)
+    right = pd.Series([2.0, 4.0, 6.0, 8.0], index=index)
+
+    result = rolling_covariance(
+        left,
+        right,
+        window=3,
+    )
+
+    pd.testing.assert_index_equal(result.index, index)
+
+
+def test_rolling_covariance_has_expected_name():
+    left = pd.Series([1.0, 2.0, 3.0])
+    right = pd.Series([3.0, 2.0, 1.0])
+
+    result = rolling_covariance(
+        left,
+        right,
+        window=3,
+    )
+
+    assert result.name == "rolling_covariance"
+
+
+def test_negative_covariance_is_correct():
+    left = pd.Series([1.0, 2.0, 3.0])
+    right = pd.Series([3.0, 2.0, 1.0])
+
+    result = rolling_covariance(
+        left,
+        right,
+        window=3,
+    )
+
+    assert result.iloc[-1] == pytest.approx(-1.0)
+
+
+def test_covariance_of_constant_series_is_zero():
+    left = pd.Series([5.0, 5.0, 5.0])
+    right = pd.Series([1.0, 2.0, 3.0])
+
+    result = rolling_covariance(
+        left,
+        right,
+        window=3,
+    )
+
+    assert result.iloc[-1] == pytest.approx(0.0)
+
+
+def test_covariance_rejects_mismatched_indices():
+    left = pd.Series(
+        [1.0, 2.0, 3.0],
+        index=pd.date_range("2026-01-01", periods=3),
+    )
+
+    right = pd.Series(
+        [1.0, 2.0, 3.0],
+        index=pd.date_range("2026-01-02", periods=3),
+    )
+
+    with pytest.raises(ValueError, match="indices must match"):
+        rolling_covariance(
+            left,
+            right,
+            window=3,
+        )
+
+
+def test_covariance_respects_ddof_zero():
+    left = pd.Series([1.0, 2.0, 3.0])
+    right = pd.Series([2.0, 4.0, 6.0])
+
+    result = rolling_covariance(
+        left,
+        right,
+        window=3,
+        ddof=0,
+    )
+
+    expected = np.cov(
+        [1.0, 2.0, 3.0],
+        [2.0, 4.0, 6.0],
+        ddof=0,
+    )[0, 1]
+
+    assert result.iloc[-1] == pytest.approx(expected)
+
+
+def test_perfect_positive_rolling_correlation():
+    left = pd.Series([1.0, 2.0, 3.0])
+    right = pd.Series([2.0, 4.0, 6.0])
+
+    result = rolling_correlation(
+        left,
+        right,
+        window=3,
+    )
+
+    assert result.iloc[-1] == pytest.approx(1.0)
+
+
+def test_perfect_negative_rolling_correlation():
+    left = pd.Series([1.0, 2.0, 3.0])
+    right = pd.Series([6.0, 4.0, 2.0])
+
+    result = rolling_correlation(
+        left,
+        right,
+        window=3,
+    )
+
+    assert result.iloc[-1] == pytest.approx(-1.0)
+
+
+def test_rolling_correlation_matches_pandas():
+    left = pd.Series([1.0, 4.0, 2.0, 5.0, 3.0])
+    right = pd.Series([5.0, 1.0, 4.0, 2.0, 3.0])
+
+    result = rolling_correlation(
+        left,
+        right,
+        window=3,
+    )
+
+    expected = left.rolling(window=3).corr(right)
+
+    expected.name = "rolling_correlation"
+
+    pd.testing.assert_series_equal(
+        result,
+        expected,
+    )
+
+
+def test_rolling_correlation_preserves_index():
+    index = pd.date_range("2026-01-01", periods=4)
+
+    left = pd.Series([1.0, 2.0, 4.0, 8.0], index=index)
+    right = pd.Series([2.0, 3.0, 5.0, 9.0], index=index)
+
+    result = rolling_correlation(
+        left,
+        right,
+        window=3,
+    )
+
+    pd.testing.assert_index_equal(
+        result.index,
+        index,
+    )
+
+
+def test_rolling_correlation_has_expected_name():
+    left = pd.Series([1.0, 2.0, 3.0])
+    right = pd.Series([3.0, 4.0, 8.0])
+
+    result = rolling_correlation(
+        left,
+        right,
+        window=3,
+    )
+
+    assert result.name == "rolling_correlation"
+
+
+def test_constant_series_produces_nan_correlation():
+    left = pd.Series([5.0, 5.0, 5.0])
+    right = pd.Series([1.0, 2.0, 3.0])
+
+    result = rolling_correlation(
+        left,
+        right,
+        window=3,
+    )
+
+    assert pd.isna(result.iloc[-1])
+
+
+def test_correlation_rejects_mismatched_indices():
+    left = pd.Series(
+        [1.0, 2.0, 3.0],
+        index=pd.date_range("2026-01-01", periods=3),
+    )
+
+    right = pd.Series(
+        [1.0, 2.0, 3.0],
+        index=pd.date_range("2026-01-02", periods=3),
+    )
+
+    with pytest.raises(ValueError, match="indices must match"):
+        rolling_correlation(
+            left,
+            right,
+            window=3,
+        )
+
+
+def test_correlation_respects_min_periods():
+    left = pd.Series([1.0, 2.0, 3.0])
+    right = pd.Series([2.0, 4.0, 6.0])
+
+    result = rolling_correlation(
+        left,
+        right,
+        window=3,
+        min_periods=2,
+    )
+
+    assert pd.isna(result.iloc[0])
+    assert result.iloc[1] == pytest.approx(1.0)

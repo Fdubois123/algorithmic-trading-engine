@@ -63,3 +63,41 @@ def validate_window(
 
     if window <= 0:
         raise ValueError(f"{name} must be greater than zero.")
+
+
+def validate_pair(
+    left: pd.Series,
+    right: pd.Series,
+    *,
+    left_name: str = "Left series",
+    right_name: str = "Right series",
+    allow_nan: bool = True,
+) -> None:
+    """Validate two aligned numeric pandas Series.
+
+    Args:
+        left: First numeric Series.
+        right: Second numeric Series.
+        left_name: Name used in error messages for the first Series.
+        right_name: Name used in error messages for the second Series.
+        allow_nan: Whether missing values are permitted.
+
+    Raises:
+        TypeError: If either input is invalid.
+        ValueError: If either Series is empty, contains invalid values,
+            or the indices do not match exactly.
+    """
+    validate_numeric_series(
+        left,
+        name=left_name,
+        allow_nan=allow_nan,
+    )
+
+    validate_numeric_series(
+        right,
+        name=right_name,
+        allow_nan=allow_nan,
+    )
+
+    if not left.index.equals(right.index):
+        raise ValueError("Series indices must match exactly.")
