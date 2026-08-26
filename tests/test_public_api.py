@@ -4,6 +4,7 @@ from trading_engine import (
     indicators,
     performance,
     portfolio,
+    regime,
     risk,
     stat_arb,
 )
@@ -142,6 +143,55 @@ EXPECTED_STAT_ARB = {
 }
 
 
+EXPECTED_REGIME = {
+    "AdaptiveAllocationResult",
+    "AdaptiveStrategyAllocator",
+    "CompositeRegimeObservation",
+    "DrawdownRegime",
+    "MarketRegime",
+    "MomentumRegime",
+    "RegimeAllocation",
+    "RegimeDetectionResult",
+    "RegimeTransition",
+    "TrendRegime",
+    "VolatilityRegime",
+    "apply_strategy_turnover_limit",
+    "blend_with_base_allocation",
+    "build_regime_allocation",
+    "classify_drawdown_regime",
+    "classify_momentum_regime",
+    "classify_trend_regime",
+    "classify_volatility_regime",
+    "combine_regimes",
+    "detect_market_regimes",
+    "enrich_regime_frame",
+    "extract_regime_transitions",
+    "normalize_strategy_weights",
+    "price_returns",
+    "regime_gross_exposure",
+    "regime_persistence",
+    "regime_strategy_preferences",
+    "regime_transition_flags",
+    "rolling_drawdown_regime",
+    "rolling_momentum",
+    "rolling_momentum_regime",
+    "rolling_realized_volatility",
+    "rolling_trend_regime",
+    "rolling_trend_strength",
+    "rolling_volatility_regime",
+    "running_drawdown",
+    "score_regime",
+    "strategy_turnover",
+    "validate_strategy_weights",
+}
+
+
+EXPECTED_CONVERGENCE = {
+    "AdaptiveConvergenceResult",
+    "run_adaptive_convergence",
+}
+
+
 def test_indicator_public_api_exports_expected_symbols():
     assert set(indicators.__all__) == EXPECTED_INDICATORS
 
@@ -196,6 +246,15 @@ def test_stat_arb_public_api_symbols_are_importable():
         assert hasattr(stat_arb, name)
 
 
+def test_regime_public_api_exports_expected_symbols():
+    assert set(regime.__all__) == EXPECTED_REGIME
+
+
+def test_regime_public_api_symbols_are_importable():
+    for name in regime.__all__:
+        assert hasattr(regime, name)
+
+
 def test_top_level_public_api_contains_all_public_symbols():
     expected = (
         EXPECTED_INDICATORS
@@ -204,6 +263,8 @@ def test_top_level_public_api_contains_all_public_symbols():
         | EXPECTED_BACKTEST
         | EXPECTED_PORTFOLIO
         | EXPECTED_STAT_ARB
+        | EXPECTED_REGIME
+        | EXPECTED_CONVERGENCE
     )
 
     assert set(trading_engine.__all__) == expected
@@ -211,4 +272,7 @@ def test_top_level_public_api_contains_all_public_symbols():
 
 def test_top_level_public_api_symbols_are_importable():
     for name in trading_engine.__all__:
-        assert hasattr(trading_engine, name)
+        assert hasattr(
+            trading_engine,
+            name,
+        )
