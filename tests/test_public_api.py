@@ -1,5 +1,11 @@
 import trading_engine
-from trading_engine import backtest, indicators, performance, risk
+from trading_engine import (
+    backtest,
+    indicators,
+    performance,
+    portfolio,
+    risk,
+)
 
 EXPECTED_INDICATORS = {
     "annualized_volatility",
@@ -20,6 +26,7 @@ EXPECTED_INDICATORS = {
     "wealth_index",
 }
 
+
 EXPECTED_PERFORMANCE = {
     "annualized_return",
     "cagr",
@@ -34,10 +41,13 @@ EXPECTED_PERFORMANCE = {
     "underwater_curve",
 }
 
+
 EXPECTED_RISK = {
     "historical_cvar",
     "historical_var",
 }
+
+
 EXPECTED_BACKTEST = {
     "BacktestEngine",
     "BacktestResult",
@@ -55,6 +65,42 @@ EXPECTED_BACKTEST = {
     "QuantBacktestEngine",
     "SignalEvent",
     "Strategy",
+}
+
+
+EXPECTED_PORTFOLIO = {
+    "black_litterman_posterior",
+    "black_litterman_weights",
+    "bounded_minimum_variance_weights",
+    "default_view_uncertainty",
+    "diversification_gain",
+    "diversification_ratio",
+    "effective_number_of_assets",
+    "effective_number_of_risk_bets",
+    "enforce_turnover_limit",
+    "equal_weight_portfolio",
+    "exponentially_weighted_covariance",
+    "marginal_risk_contributions",
+    "market_implied_returns",
+    "maximum_sharpe_weights",
+    "minimum_variance_weights",
+    "percentage_risk_contributions",
+    "portfolio_return",
+    "portfolio_turnover",
+    "portfolio_variance",
+    "portfolio_volatility",
+    "project_weights_to_bounded_simplex",
+    "risk_concentration",
+    "risk_contributions",
+    "risk_parity_weights",
+    "sample_covariance",
+    "sample_expected_returns",
+    "validate_covariance_matrix",
+    "validate_expected_returns",
+    "validate_views",
+    "validate_weight_bounds",
+    "validate_weights",
+    "weight_concentration",
 }
 
 
@@ -85,9 +131,31 @@ def test_risk_public_api_symbols_are_importable():
         assert hasattr(risk, name)
 
 
+def test_backtest_public_api_exports_expected_symbols():
+    assert set(backtest.__all__) == EXPECTED_BACKTEST
+
+
+def test_backtest_public_api_symbols_are_importable():
+    for name in backtest.__all__:
+        assert hasattr(backtest, name)
+
+
+def test_portfolio_public_api_exports_expected_symbols():
+    assert set(portfolio.__all__) == EXPECTED_PORTFOLIO
+
+
+def test_portfolio_public_api_symbols_are_importable():
+    for name in portfolio.__all__:
+        assert hasattr(portfolio, name)
+
+
 def test_top_level_public_api_contains_all_public_symbols():
     expected = (
-        EXPECTED_INDICATORS | EXPECTED_PERFORMANCE | EXPECTED_RISK | EXPECTED_BACKTEST
+        EXPECTED_INDICATORS
+        | EXPECTED_PERFORMANCE
+        | EXPECTED_RISK
+        | EXPECTED_BACKTEST
+        | EXPECTED_PORTFOLIO
     )
 
     assert set(trading_engine.__all__) == expected
@@ -96,12 +164,3 @@ def test_top_level_public_api_contains_all_public_symbols():
 def test_top_level_public_api_symbols_are_importable():
     for name in trading_engine.__all__:
         assert hasattr(trading_engine, name)
-
-
-def test_backtest_public_api_exports_expected_symbols():
-    assert set(backtest.__all__) == EXPECTED_BACKTEST
-
-
-def test_backtest_public_api_symbols_are_importable():
-    for name in backtest.__all__:
-        assert hasattr(backtest, name)
