@@ -83,3 +83,54 @@ FORMAT      → PASS
 PUBLIC API  → PASS
 E2E         → PASS
 ARTIFACTS   → VERIFIED
+```
+---
+
+# ◈ RELEASE & PROJECT STATUS
+
+| Item | Status |
+|---|---|
+| Stable Release | **v1.0.0** |
+| Package Version | **1.0.0** |
+| Automated Tests | **1,330 passing** |
+| Test Coverage | **95.76%** |
+| Coverage Requirement | **≥ 95.00%** |
+| Ruff | **Passing** |
+| Formatting | **Passing** |
+| Production CLI | **Available** |
+| Artifact Verification | **SHA-256 enabled** |
+| End-to-End Validation | **Passing** |
+
+---
+
+# ◈ TECHNICAL DOCUMENTATION
+
+Detailed technical documentation is available in the repository:
+
+- [`ARCHITECTURE.md`](docs/ARCHITECTURE.md) — system architecture, package topology and execution flow.
+- [`METHODOLOGY.md`](docs/METHODOLOGY.md) — quantitative methodology, regime modelling and adaptive allocation logic.
+- [`REPRODUCIBILITY.md`](docs/REPRODUCIBILITY.md) — experiment identity, serialization and artifact integrity.
+- [`RELEASE_NOTES.md`](RELEASE_NOTES.md) — v1.0 release scope, validation and roadmap.
+
+---
+
+# ◈ RESEARCH ROADMAP
+
+The v1.0 release establishes the engineering foundation.
+
+The next major research stage focuses on:
+
+```text
+REAL MARKET DATA
+      ↓
+MULTI-ASSET EXPERIMENTS
+      ↓
+WALK-FORWARD VALIDATION
+      ↓
+REGIME-SPECIFIC ANALYSIS
+      ↓
+BENCHMARK COMPARISON
+      ↓
+ROBUSTNESS TESTING
+      ↓
+RESEARCH VISUALIZATION
