@@ -21,6 +21,9 @@ from trading_engine.backtest.models import (
 from trading_engine.backtest.portfolio import (
     Portfolio,
 )
+from trading_engine.backtest.quant_engine import (
+    QuantBacktestEngine,
+)
 from trading_engine.backtest.results import (
     BacktestResult,
 )
@@ -42,6 +45,7 @@ __all__ = [
     "OrderType",
     "Portfolio",
     "Position",
+    "QuantBacktestEngine",
     "SignalEvent",
     "Strategy",
 ]

@@ -52,6 +52,7 @@ EXPECTED_BACKTEST = {
     "OrderType",
     "Portfolio",
     "Position",
+    "QuantBacktestEngine",
     "SignalEvent",
     "Strategy",
 }
