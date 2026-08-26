@@ -5,6 +5,7 @@ from trading_engine import (
     performance,
     portfolio,
     risk,
+    stat_arb,
 )
 
 EXPECTED_INDICATORS = {
@@ -104,6 +105,43 @@ EXPECTED_PORTFOLIO = {
 }
 
 
+EXPECTED_STAT_ARB = {
+    "EngleGrangerDiagnostic",
+    "HedgeRatioResult",
+    "MeanReversionResult",
+    "PairBacktestResult",
+    "PairDiagnostics",
+    "PairLegWeights",
+    "PairPosition",
+    "PairSignal",
+    "PairsTradingStrategy",
+    "RollingHedgeResult",
+    "StationarityDiagnostic",
+    "WalkForwardPairResult",
+    "align_pair_prices",
+    "backtest_pair",
+    "backtest_pair_walk_forward",
+    "construct_spread",
+    "diagnose_pair",
+    "engle_granger_diagnostic",
+    "estimate_half_life",
+    "estimate_hedge_ratio",
+    "estimate_mean_reversion",
+    "expanding_hedge_ratio",
+    "generate_pair_positions",
+    "pair_leg_weights",
+    "pair_log_returns",
+    "pair_price_correlation",
+    "pair_share_quantities",
+    "residual_adf_statistic",
+    "rolling_hedge_ratio",
+    "rolling_spread_zscore",
+    "validate_price_series",
+    "walk_forward_spread",
+    "walk_forward_zscore",
+}
+
+
 def test_indicator_public_api_exports_expected_symbols():
     assert set(indicators.__all__) == EXPECTED_INDICATORS
 
@@ -149,6 +187,15 @@ def test_portfolio_public_api_symbols_are_importable():
         assert hasattr(portfolio, name)
 
 
+def test_stat_arb_public_api_exports_expected_symbols():
+    assert set(stat_arb.__all__) == EXPECTED_STAT_ARB
+
+
+def test_stat_arb_public_api_symbols_are_importable():
+    for name in stat_arb.__all__:
+        assert hasattr(stat_arb, name)
+
+
 def test_top_level_public_api_contains_all_public_symbols():
     expected = (
         EXPECTED_INDICATORS
@@ -156,6 +203,7 @@ def test_top_level_public_api_contains_all_public_symbols():
         | EXPECTED_RISK
         | EXPECTED_BACKTEST
         | EXPECTED_PORTFOLIO
+        | EXPECTED_STAT_ARB
     )
 
     assert set(trading_engine.__all__) == expected
