@@ -1,4 +1,3 @@
-````markdown
 <div align="center">
 
 # ◈ REPRODUCIBILITY & EXPERIMENT INTEGRITY
@@ -2075,4 +2074,3 @@ The central principle is:
 `CONFIGURE → IDENTIFY → EXECUTE → PERSIST → VERIFY`
 
 </div>
-```

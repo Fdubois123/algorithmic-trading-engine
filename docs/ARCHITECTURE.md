@@ -1,4 +1,3 @@
-````markdown
 <div align="center">
 
 # ◈ SYSTEM ARCHITECTURE
@@ -1690,4 +1689,4 @@ Reproducible Experimentation
 `DATA → REGIME → ALLOCATION → CONVERGENCE → RESEARCH → REPRODUCIBILITY`
 
 </div>
-```
+
